@@ -21,13 +21,10 @@ builder.Host.UseSerilog((context, configuration) =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend",
-        policy => policy.WithOrigins("http://localhost:4200")
-                        .AllowAnyHeader()
-                        .AllowAnyMethod());
-});
+
+builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
+    policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
+));
 
 var app = builder.Build();
 
@@ -40,6 +37,13 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+
+app.UseCors(options => options
+                .WithOrigins(new[] { "http://localhost:4200", "https://localhost:7173" })
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+            );
 
 app.MapControllers();
 
