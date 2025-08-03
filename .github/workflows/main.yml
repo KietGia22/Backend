@@ -1,0 +1,35 @@
+name: my-diary-api
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: 
+    - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - name: Setup .NET Core SDK
+        uses: actions/setup-dotnet@v4.0.0
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name:  Build
+        run: dotnet build --no-restore
+        
+      - name: Publish
+        run: dotnet publish MyDiary.API/MyDiary.API.csproj -c Release -o publish_output
+        
+      - name: Upload publish artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-diary-api-publish
+          path: publish_output
+          
+      - name: Test
+        run: dotnet test 
