@@ -2,10 +2,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using MyDiary.API.Factories;
+using MyDiary.API.Models;
 using MyDiary.Application.Auth.Models;
 using MyDiary.Application.Contracts.Identity;
 using MyDiary.Application.CurrentUser.Dtos;
 using MyDiary.Application.CurrentUser.Queries.GetCurrentUser;
+using MyDiary.Application.Diary.Dtos;
+using System.Net;
 
 namespace MyDiary.API.Controllers;
 
@@ -24,27 +28,36 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
+    [ProducesResponseType(typeof(APIResponse<AuthResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<AuthResponse>> Login(AuthRequest request) {
-        return Ok(await _authService.Login(request));
+        var result = await _authService.Login(request);
+        return Ok(APIResponseFactory.Create<AuthResponse>(HttpStatusCode.OK, true, result));
     }
 
     [HttpPost("register")]
+    [ProducesResponseType(typeof(APIResponse<RegistrationResponse>), StatusCodes.Status200OK)]
+
     public async Task<ActionResult<RegistrationResponse>> Register(RegistrationRequest request)
     {
-        return Ok(await _authService.Register(request));
+        var result = await _authService.Register(request);
+        return Ok(APIResponseFactory.Create<RegistrationResponse>(HttpStatusCode.OK, true, result));
     }
 
     [HttpPost("refresh-token")]
+    [ProducesResponseType(typeof(APIResponse<AuthResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<AuthResponse>> RefreshToken([FromBody] string refreshToken)
     {
-        return Ok(await _authService.RefreshToken(refreshToken));
+        var result = await _authService.RefreshToken(refreshToken);
+        return Ok(APIResponseFactory.Create<AuthResponse>(HttpStatusCode.OK, true, result));
     }
 
     [HttpGet("GetCurrentUser")]
+    [ProducesResponseType(typeof(APIResponse<UserDto>), StatusCodes.Status200OK)]
     [Authorize]
     public async Task<ActionResult<UserDto>> GetCurrentUser()
     {
-        return Ok(await _mediator.Send(new GetCurrentUserQuery()));
+        var result = await _mediator.Send(new GetCurrentUserQuery());
+        return Ok(APIResponseFactory.Create<UserDto>(HttpStatusCode.OK, true, result));
     }
     
 }

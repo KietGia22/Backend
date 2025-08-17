@@ -7,13 +7,14 @@ namespace MyDiary.Infrastructure.Repositories
 {
     internal class DiaryRepository(MyDiaryDbContext dbContext) : IDiaryRepository
     {
-        public async Task<(IEnumerable<DiaryEntity>, int)> GetAllMatchingAsync(string? searchValue, int pageSize, int pageNumber)
+        public async Task<(IEnumerable<DiaryEntity>, int)> GetAllMatchingAsync(string? searchValue, int pageSize, int pageNumber, string userId)
         {
             try
             {
                 string searchValueLower = searchValue?.ToLower();
 
                 var baseQuery = dbContext.Diarys
+                    .Where(d => d.UserId == userId)
                     .Where(d => searchValueLower == null || d.DiaryTitle.ToLower().Contains(searchValueLower))
                     .Skip(pageSize * (pageNumber - 1));
 

@@ -11,4 +11,6 @@ public interface IDiaryRepository
     Task Delete(DiaryEntity entity);
 
     Task Update(DiaryEntity entity);
+
+    Task<(IEnumerable<DiaryEntity>, int)> GetAllMatchingAsync(string? searchPhrase, int pageSize, int pageNumber, string userId);
 }
